@@ -2,6 +2,7 @@
 # add gosu (per https://github.com/tianon/gosu/blob/master/INSTALL.md)
 # add avahi-daemon
 # add node-red-contrib-homekit
+# add entrypoint.sh
 
 FROM nodered/node-red-docker
 USER root
