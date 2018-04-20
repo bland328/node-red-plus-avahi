@@ -1,5 +1,4 @@
 # Now less broken :)
-
 FROM nodered/node-red-docker
 
 ENV GOSU_VERSION 1.10
