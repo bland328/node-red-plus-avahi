@@ -40,3 +40,5 @@ RUN apt-get update -y && apt-get install -y apt-utils build-essential python mak
 
 USER node-red
 COPY entrypoint.sh /usr/src/node-red
+RUN gosu root chmod 755 /usr/src/node-red/entrypoint.sh
+ENTRYPOINT /usr/src/node-red/entrypoint.sh
