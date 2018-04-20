@@ -30,7 +30,7 @@ RUN set -ex; \
     rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc; \
     \
     chmod +x /usr/local/bin/gosu; \
-# verify that the binary works
+# verify the binary works
     gosu nobody true; \
     \
     apt-get purge -y --auto-remove $fetchDeps
