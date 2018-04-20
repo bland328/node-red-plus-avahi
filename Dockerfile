@@ -1,5 +1,3 @@
-FROM nodered/node-red-docker
-
 # bland328/node-red-plus-homekit Dockerfile
 # Intended for unRAID, but may serve others well
 # Based heavily upon https://github.com/mschm/node-red-contrib-homekit/issues/8#issuecomment-362029068
@@ -12,7 +10,8 @@ FROM nodered/node-red-docker
 # add node-red-contrib-homekit
 # add entrypoint.sh
 
-# Declare a Docker image on which to base the remainder of the Dockerfile
+# Declare a Docker image on which to build
+FROM nodered/node-red-docker
 
 # Become root
 USER root
