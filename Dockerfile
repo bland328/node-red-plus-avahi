@@ -32,14 +32,14 @@ RUN set -ex; \
     wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
     wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc"; \
     \
-# verify the signature
+    # verify the signature
     export GNUPGHOME="$(mktemp -d)"; \
     gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
     gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
     rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc; \
     \
     chmod +x /usr/local/bin/gosu; \
-# verify the binary works
+    # verify the binary works
     gosu nobody true; \
     \
     apt-get purge -y --auto-remove $fetchDeps
@@ -59,7 +59,7 @@ RUN apt-get update -y && apt-get install -y apt-utils build-essential python mak
 USER node-red
 
 # Install node-red-contrib-homekit
-RUN npm install node-red-contrib-homekit
+# RUN npm install node-red-contrib-homekit
 
 # Incorporate entrypoint.sh file, set its permissions, and delcare it the entrypoint for the container
 COPY entrypoint.sh /usr/src/node-red
