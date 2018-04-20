@@ -1,8 +1,12 @@
-# Now less broken :)
+# Based on the offical Node-RED docker,
+# add gosu (per https://github.com/tianon/gosu/blob/master/INSTALL.md)
+# add avahi-daemon
+# add node-red-contrib-homekit
+
 FROM nodered/node-red-docker
 USER root
 
-# Install gosu per https://github.com/tianon/gosu/blob/master/INSTALL.md
+# Install gosu 
 ENV GOSU_VERSION 1.10
 RUN set -ex; \
     \
