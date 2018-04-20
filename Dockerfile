@@ -2,6 +2,7 @@
 FROM nodered/node-red-docker
 USER root
 
+# Install gosu per https://github.com/tianon/gosu/blob/master/INSTALL.md
 ENV GOSU_VERSION 1.10
 RUN set -ex; \
     \
@@ -28,5 +29,9 @@ RUN set -ex; \
     gosu nobody true; \
     \
     apt-get purge -y --auto-remove $fetchDeps
- 
+
+RUN chown root:node-red /usr/local/bin/gosu && chmod +s /usr/local/bin/gosu
+RUN apt-get update -y && apt-get install -y apt-utils build-essential python make g++ avahi-daemon avahi-discover libnss-mdns libavahi-compat-libdnssd-dev
+
+USER node-red
 COPY entrypoint.sh /usr/src/node-red
