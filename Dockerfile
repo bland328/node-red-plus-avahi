@@ -1,5 +1,6 @@
 # Now less broken :)
 FROM nodered/node-red-docker
+USER root
 
 ENV GOSU_VERSION 1.10
 RUN set -ex; \
