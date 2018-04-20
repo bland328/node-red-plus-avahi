@@ -4,10 +4,13 @@
 # add node-red-contrib-homekit
 # add entrypoint.sh
 
+# Declare a Docker image on which to base the remainder of the Dockerfile
 FROM nodered/node-red-docker
+
+# Become root
 USER root
 
-# Install gosu 
+# Download and install gosu
 ENV GOSU_VERSION 1.10
 RUN set -ex; \
     \
@@ -35,10 +38,19 @@ RUN set -ex; \
     \
     apt-get purge -y --auto-remove $fetchDeps
 
+# Set gosu ownership and permissions
 RUN chown root:node-red /usr/local/bin/gosu && chmod +s /usr/local/bin/gosu
+
+# Get avahi-daemon et al
 RUN apt-get update -y && apt-get install -y apt-utils build-essential python make g++ avahi-daemon avahi-discover libnss-mdns libavahi-compat-libdnssd-dev
 
+# Become user node-red
 USER node-red
+
+# Install node-red-contrib-homekit
+RUN npm install node-red-contrib-homekit
+
+# Incorporate entrypoint.sh file, set its permissions, and delcare it the entrypoint for the container
 COPY entrypoint.sh /usr/src/node-red
 RUN gosu root chmod 755 /usr/src/node-red/entrypoint.sh
 ENTRYPOINT /usr/src/node-red/entrypoint.sh
