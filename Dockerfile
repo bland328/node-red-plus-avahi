@@ -68,7 +68,7 @@ RUN chown messagebus:messagebus /var/run/dbus && chown avahi:avahi /var/run/avah
 USER node-red
 
 # Install node-red-contrib-homekit
-RUN cd ~/.node-red && npm install node-red-contrib-homekit
+RUN npm install node-red-contrib-homekit
 
 # Incorporate entrypoint.sh file, set its permissions, and delcare it the entrypoint for the container
 COPY entrypoint.sh /usr/src/node-red
