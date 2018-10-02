@@ -1,5 +1,6 @@
 # bland328/node-red-plus-homekit Dockerfile
 # see: https://store.docker.com/community/images/bland328/node-red-plus-homekit
+# and: https://cloud.docker.com/swarm/bland328/repository/docker/bland328/node-red-plus-homekit/general
 # Intended for unRAID, but may serve others well
 # Based heavily upon https://github.com/mschm/node-red-contrib-homekit/issues/8#issuecomment-362029068
 
