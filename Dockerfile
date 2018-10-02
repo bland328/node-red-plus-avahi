@@ -1,8 +1,13 @@
 # bland328/node-red-plus-homekit Dockerfile
-# see: https://store.docker.com/community/images/bland328/node-red-plus-homekit
-# and: https://cloud.docker.com/swarm/bland328/repository/docker/bland328/node-red-plus-homekit/general
+#
 # Intended for unRAID, but may serve others well
 # Based heavily upon https://github.com/mschm/node-red-contrib-homekit/issues/8#issuecomment-362029068
+#
+# Reminder to myself, as I don't do this very often:
+# AUTOBUILD IS ON AT https://cloud.docker.com/swarm/bland328/repository/docker/bland328/node-red-plus-homekit/general
+# SO ANY PUSHED CHANGE HERE RESULTS IN A BUILD BASED ON THE LATEST NODE-RED
+#
+# The resulting build is at https://store.docker.com/community/images/bland328/node-red-plus-homekit
 
 # Overview:
 # Based on the offical Node-RED docker
