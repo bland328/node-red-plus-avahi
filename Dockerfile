@@ -1,5 +1,7 @@
 # bland328/node-red-plus-homekit Dockerfile
 #
+# A Node-RED Dockerfile with Homekit integrated
+#
 # Intended for unRAID, but may serve others well
 # Based heavily upon https://github.com/mschm/node-red-contrib-homekit/issues/8#issuecomment-362029068
 #
