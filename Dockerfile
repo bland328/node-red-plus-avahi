@@ -59,10 +59,8 @@ RUN chown root:node-red /usr/local/bin/gosu && chmod +s /usr/local/bin/gosu
 # Get avahi-daemon et al
 RUN apt-get update -y && apt-get install -y apt-utils build-essential python make g++ avahi-daemon avahi-discover libnss-mdns libavahi-compat-libdnssd-dev
 
-# $host-name environment variable must contain hostname
-## RUN sed -i "s/#enable-dbus=yes/enable-dbus=yes/g" /etc/avahi/avahi-daemon.conf && sed -i "s/.*host-name.*/host-name=$host-name/" /etc/avahi/avahi-daemon.conf
+# Configure avahi-daemon
 RUN sed -i "s/#enable-dbus=yes/enable-dbus=yes/g" /etc/avahi/avahi-daemon.conf
-##RUN sed -i "s/.*host-name.*/host-name=$host-name/" /etc/avahi/avahi-daemon.conf
 RUN mkdir -p /var/run/dbus && mkdir -p /var/run/avahi-daemon
 RUN chown messagebus:messagebus /var/run/dbus && chown avahi:avahi /var/run/avahi-daemon && dbus-uuidgen --ensure
 
