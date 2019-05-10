@@ -1,13 +1,15 @@
 # bland328/node-red-plus-homekit Dockerfile
 #
-# A Node-RED Dockerfile with Homekit integrated
+# Node-RED Dockerfile with integrated Avahi to support node-red-contrib-homekit-bridged
 #
 # Intended for unRAID, but may serve others well
 # Based heavily upon https://github.com/mschm/node-red-contrib-homekit/issues/8#issuecomment-362029068
 #
-# Reminder to myself, as I don't do this very often:
-# AUTOBUILD IS ON AT https://cloud.docker.com/swarm/bland328/repository/docker/bland328/node-red-plus-homekit/general
-# SO ANY PUSHED CHANGE HERE RESULTS IN A BUILD BASED ON THE LATEST NODE-RED 
+# Build reminders to myself, as I don't deal with this very often:
+#   1) AUTOBUILD IS ON AT https://cloud.docker.com/swarm/bland328/repository/docker/bland328/node-red-plus-homekit/general
+#      SO ANY PUSHED CHANGE HERE RESULTS IN A BUILD BASED ON THE LATEST OFFICIAL NODE-RED DOCKER CONTAINER.
+#   2) I also have REPOSITORY LINKS turned on at Docker Hub, so any change to the Base Image (in this case, the
+#      official Node-RED Docker Container) also results in an auto-build.
 #
 # The resulting build is at https://store.docker.com/community/images/bland328/node-red-plus-homekit
 
@@ -16,7 +18,7 @@
 # add gosu (per https://github.com/tianon/gosu/blob/master/INSTALL.md)
 # add avahi-daemon
 # configure avahi-daemon execution
-# add node-red-contrib-homekit
+# DISABLED, AS THIS NEEDS TO BE INSTALLED BY THE USER: add node-red-contrib-homekit-bridged
 # add entrypoint.sh
 
 # Declare a Docker image on which to build
@@ -67,10 +69,11 @@ RUN chown messagebus:messagebus /var/run/dbus && chown avahi:avahi /var/run/avah
 # Become user node-red
 USER node-red
 
-# Install node-red-contrib-homekit
-RUN cd /data && npm install node-red-contrib-homekit-bridged
+# Install node-red-contrib-homekit-bridged
+# CURRENTLY DISABLED, AS THIS NEEDS TO BE INSTALLED BY THE USER, AFTER THE PERSISTANT /data DIR EXISTS
+# RUN cd /data && npm install node-red-contrib-homekit-bridged
 
-# Incorporate entrypoint.sh file, set its permissions, and delcare it the entrypoint for the container
+# Incorporate entrypoint.sh file, set its permissions, and declare it the entrypoint for the container
 COPY entrypoint.sh /usr/src/node-red
 RUN gosu root chmod 755 /usr/src/node-red/entrypoint.sh
 ENTRYPOINT /usr/src/node-red/entrypoint.sh
