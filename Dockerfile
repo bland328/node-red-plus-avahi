@@ -9,8 +9,8 @@
 #   1) AUTOBUILD IS ON AT https://cloud.docker.com/swarm/bland328/repository/docker/bland328/node-red-plus-homekit/general
 #      SO ANY PUSHED CHANGE HERE RESULTS IN A BUILD BASED ON THE LATEST OFFICIAL NODE-RED DOCKER CONTAINER.
 #   2) I also have REPOSITORY LINKS turned on at Docker Hub, so any change to the Base Image (in this case, the
-#      official Node-RED Docker Container) would also theoretically result in an auto-build; sadly, it appears
-#      this nifty Docker Hub feature is likely broken.
+#      official Node-RED Docker Container) would also theoretically result in an auto-build; it is currently unclear
+#      whether this nifty Docker Hub feature is broken.
 #
 # The resulting build is at https://store.docker.com/community/images/bland328/node-red-plus-homekit
 
@@ -23,7 +23,8 @@
 #     + Add entrypoint.sh
 
 # Declare a Docker image on which to build
-FROM nodered/node-red-docker
+#FROM nodered/node-red-docker  # 2020-01-07 Moved to new official Node-RED base image
+FROM nodered/node-red
 
 # Become root
 USER root
