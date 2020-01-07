@@ -1,4 +1,4 @@
-# bland328/node-red-plus-homekit Dockerfile
+# bland328/node-red-plus-avahi Dockerfile
 #
 # Node-RED Dockerfile with integrated Avahi to support node-red-contrib-homekit-bridged
 #
@@ -69,15 +69,25 @@ RUN set -ex ; \
 # Set gosu ownership and permissions
 RUN chown root:node-red /usr/local/bin/gosu && chmod +s /usr/local/bin/gosu
 
-# Get avahi-daemon et al
+# Install OpenRC init system, avahi-daemon and more
 #RUN apt-get update -y && apt-get install -y apt-utils build-essential python make g++ avahi-daemon avahi-discover libnss-mdns libavahi-compat-libdnssd-dev
-RUN apk update && apk add dbus make g++ avahi avahi-dev && rm -rf /var/cache/apk/*
+#RUN apk update && apk add dbus make g++ avahi avahi-dev && rm -rf /var/cache/apk/*
+RUN fetchDeps=' \
+        openrc \
+        dpkg \
+        ca-certificates \
+        wget \
+        gnupg \
+    ' ; \
+    apk update && \
+    apk add $fetchDeps && \
+    rm -rf /var/cache/apk/* ;
 #apt-get install -y apt-utils build-essential python make g++ avahi-daemon avahi-discover libnss-mdns libavahi-compat-libdnssd-dev
 
 # Configure avahi-daemon
-RUN sed -i "s/#enable-dbus=yes/enable-dbus=yes/g" /etc/avahi/avahi-daemon.conf
-RUN mkdir -p /var/run/dbus && mkdir -p /var/run/avahi-daemon
-RUN chown messagebus:messagebus /var/run/dbus && chown avahi:avahi /var/run/avahi-daemon && dbus-uuidgen --ensure
+RUN sed -i "s/#enable-dbus=yes/enable-dbus=yes/g" /etc/avahi/avahi-daemon.conf && \
+    mkdir -p /var/run/dbus && mkdir -p /var/run/avahi-daemon && \
+    chown messagebus:messagebus /var/run/dbus && chown avahi:avahi /var/run/avahi-daemon && dbus-uuidgen --ensure
 
 # Become user node-red
 USER node-red
