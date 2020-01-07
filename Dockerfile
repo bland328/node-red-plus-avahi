@@ -30,41 +30,43 @@ FROM nodered/node-red:latest
 USER root
 
 # Download and install gosu
-ENV GOSU_VERSION 1.11
-RUN set -ex; \
-    \
-    fetchDeps=' \
-        ca-certificates \
-        wget \
-    '; \
-    apt-get update; \
-    apt-get install -y --no-install-recommends $fetchDeps; \
-    rm -rf /var/lib/apt/lists/*; \
-    \
-    dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
-    wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
-    wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc"; \
-    \
-    # verify the signature
-    export GNUPGHOME="$(mktemp -d)"; \
-    key="B42F6819007F00F88E364FD4036A9C25BF357DD4"; \
-    gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key" || \
-    gpg --keyserver pgp.mit.edu --recv-keys "$key" || \
-    gpg --keyserver keyserver.pgp.com --recv-keys "$key"; \
-    gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
-    rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc; \
-    \
-    chmod +x /usr/local/bin/gosu; \
-    # verify the binary works
-    gosu nobody true; \
-    \
-    apt-get purge -y --auto-remove $fetchDeps
+#ENV GOSU_VERSION 1.11
+#RUN set -ex; \
+#    \
+#    fetchDeps=' \
+#        ca-certificates \
+#        wget \
+#    '; \
+#    apt-get update; \
+#    apt-get install -y --no-install-recommends $fetchDeps; \
+#    rm -rf /var/lib/apt/lists/*; \
+#    \
+#    dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
+#    wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
+#    wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc"; \
+#    \
+#    # verify the signature
+#    export GNUPGHOME="$(mktemp -d)"; \
+#    key="B42F6819007F00F88E364FD4036A9C25BF357DD4"; \
+#    gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key" || \
+#    gpg --keyserver pgp.mit.edu --recv-keys "$key" || \
+#    gpg --keyserver keyserver.pgp.com --recv-keys "$key"; \
+#    gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
+#    rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc; \
+#    \
+#    chmod +x /usr/local/bin/gosu; \
+#    # verify the binary works
+#    gosu nobody true; \
+#    \
+#    apt-get purge -y --auto-remove $fetchDeps
 
 # Set gosu ownership and permissions
-RUN chown root:node-red /usr/local/bin/gosu && chmod +s /usr/local/bin/gosu
+#RUN chown root:node-red /usr/local/bin/gosu && chmod +s /usr/local/bin/gosu
 
 # Get avahi-daemon et al
-RUN apt-get update -y && apt-get install -y apt-utils build-essential python make g++ avahi-daemon avahi-discover libnss-mdns libavahi-compat-libdnssd-dev
+#RUN apt-get update -y && apt-get install -y apt-utils build-essential python make g++ avahi-daemon avahi-discover libnss-mdns libavahi-compat-libdnssd-dev
+RUN apk update && apk add dbus make g++ avahi avahi-dev
+#apt-get install -y apt-utils build-essential python make g++ avahi-daemon avahi-discover libnss-mdns libavahi-compat-libdnssd-dev
 
 # Configure avahi-daemon
 RUN sed -i "s/#enable-dbus=yes/enable-dbus=yes/g" /etc/avahi/avahi-daemon.conf
@@ -72,7 +74,7 @@ RUN mkdir -p /var/run/dbus && mkdir -p /var/run/avahi-daemon
 RUN chown messagebus:messagebus /var/run/dbus && chown avahi:avahi /var/run/avahi-daemon && dbus-uuidgen --ensure
 
 # Become user node-red
-USER node-red
+#USER node-red
 
 # Install node-red-contrib-homekit-bridged
 # CURRENTLY DISABLED, AS THIS NEEDS TO BE INSTALLED BY THE USER, AFTER THE PERSISTANT /data DIR EXISTS
@@ -80,5 +82,8 @@ USER node-red
 
 # Incorporate entrypoint.sh file, set its permissions, and declare it the entrypoint for the container
 COPY entrypoint.sh /usr/src/node-red
-RUN gosu root chmod 755 /usr/src/node-red/entrypoint.sh
+#RUN gosu root chmod 755 /usr/src/node-red/entrypoint.sh
+RUN chown node-red:node-red /usr/src/node-red/entrypoint.sh
+RUN chmod 755 /usr/src/node-red/entrypoint.sh
+USER node-red
 ENTRYPOINT /usr/src/node-red/entrypoint.sh
