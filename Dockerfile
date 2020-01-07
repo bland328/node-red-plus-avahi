@@ -24,7 +24,7 @@
 
 # Declare a Docker image on which to build
 #FROM nodered/node-red-docker  # 2020-01-07 Moved to new official Node-RED base image
-FROM nodered/node-red
+FROM nodered/node-red:latest
 
 # Become root
 USER root
