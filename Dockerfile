@@ -73,11 +73,10 @@ RUN chown root:node-red /usr/local/bin/gosu && chmod +s /usr/local/bin/gosu
 #RUN apt-get update -y && apt-get install -y apt-utils build-essential python make g++ avahi-daemon avahi-discover libnss-mdns libavahi-compat-libdnssd-dev
 #RUN apk update && apk add dbus make g++ avahi avahi-dev && rm -rf /var/cache/apk/*
 RUN fetchDeps=' \
-        openrc \
-        dpkg \
-        ca-certificates \
-        wget \
-        gnupg \
+        make \
+        g++ \
+        avahi \
+        avahi-dev \
     ' ; \
     apk update && \
     apk add $fetchDeps && \
