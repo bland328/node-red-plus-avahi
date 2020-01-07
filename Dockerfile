@@ -9,17 +9,18 @@
 #   1) AUTOBUILD IS ON AT https://cloud.docker.com/swarm/bland328/repository/docker/bland328/node-red-plus-homekit/general
 #      SO ANY PUSHED CHANGE HERE RESULTS IN A BUILD BASED ON THE LATEST OFFICIAL NODE-RED DOCKER CONTAINER.
 #   2) I also have REPOSITORY LINKS turned on at Docker Hub, so any change to the Base Image (in this case, the
-#      official Node-RED Docker Container) also results in an auto-build.
+#      official Node-RED Docker Container) would also theoretically result in an auto-build; sadly, it appears
+#      this nifty Docker Hub feature is likely broken.
 #
 # The resulting build is at https://store.docker.com/community/images/bland328/node-red-plus-homekit
 
 # Overview:
-# Based on the offical Node-RED docker
-# add gosu (per https://github.com/tianon/gosu/blob/master/INSTALL.md)
-# add avahi-daemon
-# configure avahi-daemon execution
-# DISABLED, AS THIS NEEDS TO BE INSTALLED BY THE USER: add node-red-contrib-homekit-bridged
-# add entrypoint.sh
+#   Based on the offical Node-RED docker
+#     + Add gosu (per https://github.com/tianon/gosu/blob/master/INSTALL.md)
+#     + Add avahi-daemon
+#     + Configure avahi-daemon execution
+#     - Add node-red-contrib-homekit-bridged (DISABLED; MUST BE INSTALLED BY THE USER VIA THE GUI)
+#     + Add entrypoint.sh
 
 # Declare a Docker image on which to build
 FROM nodered/node-red-docker
