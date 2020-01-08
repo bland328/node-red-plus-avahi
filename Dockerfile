@@ -15,10 +15,10 @@
 # The resulting build is at https://store.docker.com/community/images/bland328/node-red-plus-homekit
 
 # TODO:
-#   Consider replacing gosu with su-exec per https://github.com/tianon/gosu/blob/master/INSTALL.md ("Note: when using Alpine, it's probably also worth checking out su-exec (apk add --no-cache su-exec) instead, which since version 0.2 is fully gosu-compatible in a fraction of the file size.")
+#   Consider replacing gosu with su-exec per https://github.com/tianon/gosu/blob/master/INSTALL.md: "Note: when using Alpine, it's probably also worth checking out su-exec (apk add --no-cache su-exec) instead, which since version 0.2 is fully gosu-compatible in a fraction of the file size."
 
 # Overview:
-#   Based on the offical Node-RED docker
+#   Based on offical Node-RED docker
 #     + Add gosu (per https://github.com/tianon/gosu/blob/master/INSTALL.md)
 #     + Add avahi-daemon
 #     + Configure avahi-daemon execution
@@ -26,58 +26,52 @@
 
 # Declare a Docker image on which to build (2020-01-07: Moved to newer official Node-RED base image)
 FROM nodered/node-red:latest
+
 # Become root
 USER root
 
-# Download and install gosu
+# Download and install gosu (per https://github.com/tianon/gosu/blob/master/INSTALL.md)
 ENV GOSU_VERSION 1.11
-RUN set -ex ; \
-    \
-    fetchDeps=' \
-        dpkg \
-        ca-certificates \
-        wget \
-        gnupg \
-    '; \
-    \
-    apk update ; \
-    apk add $fetchDeps ; \
-    rm -rf /var/cache/apk/* ; \
-    \
-    dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" ; \
-    wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" ; \
-    wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc" ; \
-    \
+RUN set -eux; \
+	\
+	apk add --no-cache --virtual .gosu-deps \
+		ca-certificates \
+		dpkg \
+		gnupg \
+	; \
+	\
+	dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
+	wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
+	wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc"; \
+	\
     # Verify signature
-    export GNUPGHOME="$(mktemp -d)" ; \
-    key="B42F6819007F00F88E364FD4036A9C25BF357DD4" ; \
-    gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key" || \
-    gpg --keyserver pgp.mit.edu --recv-keys "$key" || \
-    gpg --keyserver keyserver.pgp.com --recv-keys "$key" ; \
-    gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu ; \
-    rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc ; \
-    \
-    chmod +x /usr/local/bin/gosu ; \
+	export GNUPGHOME="$(mktemp -d)"; \
+	gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
+	gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
+	command -v gpgconf && gpgconf --kill all || :; \
+	rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc; \
+	\
+    # Clean up fetch dependencies
+	apk del --no-network .gosu-deps; \
+	\
+	chmod +x /usr/local/bin/gosu; \
     # Verify binary works
-    gosu nobody true ; \
-    \
-    apk del $fetchDeps
-
+	gosu --version; \
+	gosu nobody true
+    
 # Set gosu ownership and permissions
 RUN chown root:node-red /usr/local/bin/gosu && chmod +s /usr/local/bin/gosu
 
 # Install OpenRC init system, avahi-daemon and more
-RUN fetchDeps=' \
+RUN apk add --no-cache --virtual .misc-deps \
         openrc \
         dbus \
         make \
         g++ \
         avahi \
         avahi-dev \
-    ' ; \
-    apk update && \
-    apk add $fetchDeps && \
-    rm -rf /var/cache/apk/* ;
+	; \
+	apk del --no-network .misc-deps
 
 # Configure avahi-daemon
 RUN sed -i "s/#enable-dbus=yes/enable-dbus=yes/g" /etc/avahi/avahi-daemon.conf && \
