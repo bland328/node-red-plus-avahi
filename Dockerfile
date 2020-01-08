@@ -30,58 +30,61 @@ FROM nodered/node-red:latest
 # Become root
 USER root
 
+# Install su-exec (instead of gosu)
+RUN apk add --no-cache su-exec
+
 # Download and install gosu (per https://github.com/tianon/gosu/blob/master/INSTALL.md)
-ENV GOSU_VERSION 1.11
-RUN set -eux; \
-	\
-	apk add --no-cache --virtual .gosu-deps \
-		ca-certificates \
-		dpkg \
-		gnupg \
-	; \
-	\
-	dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
-	wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
-	wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc"; \
-	\
-    # Verify signature
-	export GNUPGHOME="$(mktemp -d)"; \
-	gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
-	gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
-	command -v gpgconf && gpgconf --kill all || :; \
-	rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc; \
-	\
-    # Clean up fetch dependencies
-	apk del --no-network .gosu-deps; \
-	\
-	chmod +x /usr/local/bin/gosu; \
-    # Verify binary works
-	gosu --version; \
-	gosu nobody true
+#ENV GOSU_VERSION 1.11
+#RUN set -eux; \
+#	\
+#	apk add --no-cache --virtual .gosu-deps \
+#		ca-certificates \
+#		dpkg \
+#		gnupg \
+#	; \
+#	\
+#	dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
+#	wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
+#	wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc"; \
+#	\
+#	# Verify signature
+#	export GNUPGHOME="$(mktemp -d)"; \
+#	gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
+#	gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
+#	command -v gpgconf && gpgconf --kill all || :; \
+#	rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc; \
+#	\
+#	# Clean up fetch dependencies
+#	apk del --no-network .gosu-deps; \
+#	\
+#	chmod +x /usr/local/bin/gosu; \
+#	# Verify binary works
+#	gosu --version; \
+#	gosu nobody true
     
 # Set gosu ownership and permissions
-RUN chown root:node-red /usr/local/bin/gosu && chmod +s /usr/local/bin/gosu
+#RUN chown root:node-red /usr/local/bin/gosu && chmod +s /usr/local/bin/gosu
 
 # Install OpenRC init system, avahi-daemon and more
 RUN apk add --no-cache \
-        openrc \
-        dbus \
-        make \
-        g++ \
-        avahi \
-        avahi-dev \
+	openrc \
+	dbus \
+	make \
+	g++ \
+	avahi \
+	avahi-dev \
 	; \
 	rm -rf /var/cache/apk/*
 
 # Configure avahi-daemon
 RUN sed -i "s/#enable-dbus=yes/enable-dbus=yes/g" /etc/avahi/avahi-daemon.conf && \
-    mkdir -p /var/run/dbus && mkdir -p /var/run/avahi-daemon && \
-    chown messagebus:messagebus /var/run/dbus && chown avahi:avahi /var/run/avahi-daemon && dbus-uuidgen --ensure
+	mkdir -p /var/run/dbus && mkdir -p /var/run/avahi-daemon && \
+	chown messagebus:messagebus /var/run/dbus && chown avahi:avahi /var/run/avahi-daemon && dbus-uuidgen --ensure
 
 # Become user node-red
 USER node-red
 
 # Incorporate entrypoint.sh file, set its permissions, and declare it the entrypoint for the container
 COPY entrypoint.sh /usr/src/node-red
-RUN gosu root chmod 755 /usr/src/node-red/entrypoint.sh
+RUN su-exec root chmod 755 /usr/src/node-red/entrypoint.sh
 ENTRYPOINT /usr/src/node-red/entrypoint.sh
