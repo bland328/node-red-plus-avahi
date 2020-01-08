@@ -2,7 +2,8 @@
 #
 # Node-RED Dockerfile with integrated Avahi to support node-red-contrib-homekit-bridged
 #
-# Intended for unRAID, but may serve others well
+# Build for use with Unraid, but know of no specific provisions that would preclude other uses
+#
 # Based heavily upon https://github.com/mschm/node-red-contrib-homekit/issues/8#issuecomment-362029068
 #
 # Build reminders to myself, as I don't deal with this very often:
