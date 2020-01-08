@@ -63,7 +63,7 @@ RUN set -eux; \
 RUN chown root:node-red /usr/local/bin/gosu && chmod +s /usr/local/bin/gosu
 
 # Install OpenRC init system, avahi-daemon and more
-RUN apk add --no-cache --virtual .misc-deps \
+RUN apk add --no-cache \
         openrc \
         dbus \
         make \
@@ -71,7 +71,7 @@ RUN apk add --no-cache --virtual .misc-deps \
         avahi \
         avahi-dev \
 	; \
-	apk del --no-network .misc-deps
+	rm -rf /var/cache/apk/*
 
 # Configure avahi-daemon
 RUN sed -i "s/#enable-dbus=yes/enable-dbus=yes/g" /etc/avahi/avahi-daemon.conf && \
