@@ -14,12 +14,14 @@
 #
 # The resulting build is at https://store.docker.com/community/images/bland328/node-red-plus-homekit
 
+# TODO:
+#   Consider replacing gosu with su-exec per https://github.com/tianon/gosu/blob/master/INSTALL.md ("Note: when using Alpine, it's probably also worth checking out su-exec (apk add --no-cache su-exec) instead, which since version 0.2 is fully gosu-compatible in a fraction of the file size.")
+
 # Overview:
 #   Based on the offical Node-RED docker
 #     + Add gosu (per https://github.com/tianon/gosu/blob/master/INSTALL.md)
 #     + Add avahi-daemon
 #     + Configure avahi-daemon execution
-#     - Add node-red-contrib-homekit-bridged (DISABLED; MUST BE INSTALLED BY THE USER VIA THE GUI)
 #     + Add entrypoint.sh
 
 # Declare a Docker image on which to build (2020-01-07: Moved to newer official Node-RED base image)
